@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Task List</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <style>
+    /* Add any additional custom styles here */
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1 class="mt-4">Task List</h1>
+    <div id="task-container" class="mt-4">
+      <!-- Tasks will be dynamically added here -->
+    </div>
+    <div class="mt-4">
+      <a href="/add-task" class="btn btn-primary">Add New Task</a>
+    </div>
+  </div>
+
+  <script>
+    // Fetch tasks from the API endpoint and display them
+    fetchTasks();
+
+    async function fetchTasks() {
+      const response = await fetch('/tasks');
+      const tasks = await response.json();
+      const taskContainer = document.getElementById('task-container');
+
+      // Loop through the tasks and create Bootstrap cards to display them
+      // Loop through the tasks and create Bootstrap cards to display them
+      tasks.forEach(task => {
+        const card = document.createElement('div');
+        card.classList.add('card', 'mb-3');
+
+        const cardBody = document.createElement('div');
+        cardBody.classList.add('card-body');
+
+        const cardTitle = document.createElement('h5');
+        cardTitle.classList.add('card-title');
+        cardTitle.textContent = task.title;
+
+        const cardSubtitle = document.createElement('h6');
+        cardSubtitle.classList.add('card-subtitle', 'mb-2', 'text-muted');
+        cardSubtitle.textContent = `ID: ${task.id}`;
+
+        const cardText = document.createElement('p');
+        cardText.classList.add('card-text');
+        cardText.textContent = task.description;
+
+        const deleteButton = document.createElement('button');
+        deleteButton.classList.add('btn', 'btn-danger');
+        deleteButton.innerHTML = '<i class="fas fa-trash"></i>';
+        deleteButton.addEventListener('click', () => deleteTask(task.id));
+
+        cardBody.appendChild(cardTitle);
+        cardBody.appendChild(cardSubtitle);
+        cardBody.appendChild(cardText);
+        cardBody.appendChild(deleteButton);
+
+        card.appendChild(cardBody);
+        taskContainer.appendChild(card);
+      });
+
+    }
+
+    function deleteTask(taskID) {
+      fetch(`/tasks/${taskID}`, {
+        method: 'DELETE'
+      })
+        .then(response => {
+          if (response.ok) {
+            // Task deleted successfully, refresh the task list
+            location.reload();
+          } else {
+            // Handle error, show error message, etc.
+            console.error('Error deleting task');
+          }
+        })
+        .catch(error => {
+          console.error('Error deleting task:', error);
+          // Handle error, show error message, etc.
+        });
+    }
+
+  </script>
+</body>
+
+</html>

@@ -11,7 +11,7 @@ import (
 type Task struct {
 	ID          string `json:"id"`
 	Title       string `json:"title"`
-	Description string `json:"Description"`
+	Description string `json:"description"`
 }
 
 var tasks []Task
