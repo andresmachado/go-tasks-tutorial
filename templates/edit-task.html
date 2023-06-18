@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Edit Task</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    /* Add your custom styles here */
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1 class="mt-4">Edit Task</h1>
+
+    <form id="edit-task-form">
+      <input type="hidden" id="task-id">
+
+      <div class="form-group">
+        <label for="task-name">Task Name</label>
+        <input type="text" class="form-control" id="task-name" required>
+      </div>
+
+      <div class="form-group">
+        <label for="task-description">Task Description</label>
+        <textarea class="form-control" id="task-description" rows="4" required></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Update</button>
+      <button type="button" class="btn btn-secondary" onclick="cancelForm()">Cancel</button>
+    </form>
+  </div>
+
+  <script>
+    // Fetch the task and populate the form fields
+    fetchTask();
+
+    async function fetchTask() {
+      const taskId = getTaskIdFromURL();
+      const response = await fetch(`/tasks/${taskId}`);
+      const task = await response.json();
+
+      document.getElementById('task-id').value = task.id;
+      document.getElementById('task-name').value = task.title;
+      document.getElementById('task-description').value = task.description;
+    }
+
+    // Submit the form and update the task
+    document.getElementById('edit-task-form').addEventListener('submit', updateTask);
+
+    function updateTask(event) {
+      event.preventDefault();
+
+      const taskId = document.getElementById('task-id').value;
+      const taskName = document.getElementById('task-name').value;
+      const taskDescription = document.getElementById('task-description').value;
+
+      const taskData = {
+        title: taskName,
+        description: taskDescription
+      };
+
+      fetch(`/tasks/${taskId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(taskData)
+      })
+        .then(response => response.json())
+        .then(data => {
+          // Task updated successfully, redirect to tasks.html
+          window.location.href = '/';
+        })
+        .catch(error => {
+          console.error('Error updating task:', error);
+          // Handle error, show error message, etc.
+        });
+    }
+
+    // Cancel the form and redirect to tasks.html
+    function cancelForm() {
+      window.location.href = '/';
+    }
+
+    // Get the task ID from the URL parameter
+    function getTaskIdFromURL() {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get('id');
+    }
+  </script>
+</body>
+
+</html>

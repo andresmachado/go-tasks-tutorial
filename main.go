@@ -29,7 +29,11 @@ func main() {
 	// Serve index page
 	router.HandleFunc("/", serveIndexPage).Methods("GET")
 
-	router.HandleFunc("/add-task", serveAddTaskPage).Methods("GET")
+	// Serve AddTask page
+	router.HandleFunc("/task/add", serveAddTaskPage).Methods("GET")
+
+	// Serve EditTask page
+	router.HandleFunc("/task/edit", serveUpdateTaskPage).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(":8000", router))
 }
@@ -40,4 +44,8 @@ func serveIndexPage(w http.ResponseWriter, r *http.Request) {
 
 func serveAddTaskPage(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "templates/add-task.html")
+}
+
+func serveUpdateTaskPage(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "templates/edit-task.html")
 }

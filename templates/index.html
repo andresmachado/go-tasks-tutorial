@@ -17,7 +17,7 @@
       <!-- Tasks will be dynamically added here -->
     </div>
     <div class="mt-4">
-      <a href="/add-task" class="btn btn-primary">Add New Task</a>
+      <a href="/task/add" class="btn btn-primary">Add New Task</a>
     </div>
   </div>
 
@@ -56,9 +56,15 @@
         deleteButton.innerHTML = '<i class="fas fa-trash"></i>';
         deleteButton.addEventListener('click', () => deleteTask(task.id));
 
+        const editButton = document.createElement('a');
+        editButton.classList.add('btn', 'btn-secondary', 'mr-2');
+        editButton.innerHTML = '<i class="fas fa-pencil-alt"></i>';
+        editButton.href = `/task/edit?id=${task.id}`;
+
         cardBody.appendChild(cardTitle);
         cardBody.appendChild(cardSubtitle);
         cardBody.appendChild(cardText);
+        cardBody.appendChild(editButton);
         cardBody.appendChild(deleteButton);
 
         card.appendChild(cardBody);
