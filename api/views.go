@@ -1,19 +1,33 @@
-package main
+package api
 
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
 
+type Task struct {
+	ID          string `json:"id"`
+	Title       string `json:"title"`
+	Description string `json:"Description"`
+}
+
+var tasks []Task
+
 type ResponseMessage struct {
-	Message string `json:"error"`
+	Message string `json:"message"`
 }
 
 // getTasks returns all tasks
 func GetTasks(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+
+	if len(tasks) == 0 {
+		json.NewEncoder(w).Encode([]Task{})
+		return
+	}
 
 	// Fetch tasks from main module and return to the encoder
 	json.NewEncoder(w).Encode(tasks)
@@ -25,6 +39,9 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 
 	// Define a new task object
 	var task Task
+
+	// Generate a new ID
+	task.ID = strconv.Itoa(len(tasks) + 1)
 
 	_ = json.NewDecoder(r.Body).Decode(&task)
 
@@ -62,13 +79,16 @@ func UpdateTask(w http.ResponseWriter, r *http.Request) {
 
 	params := mux.Vars(r)
 
+	var updatedTask Task
+	_ = json.NewDecoder(r.Body).Decode(&updatedTask)
+
 	for index, task := range tasks {
 		if task.ID == params["id"] {
-			tasks = append(tasks[:index], tasks[index+1:]...)
-			var task Task
-			_ = json.NewDecoder(r.Body).Decode(&task)
-			tasks = append(tasks, task)
-			json.NewEncoder(w).Encode(task)
+			updatedTask.ID = task.ID
+
+			tasks[index] = updatedTask
+
+			json.NewEncoder(w).Encode(updatedTask)
 			return
 		}
 	}
@@ -86,7 +106,7 @@ func DeleteTask(w http.ResponseWriter, r *http.Request) {
 	for index, task := range tasks {
 		if task.ID == params["id"] {
 			tasks = append(tasks[:index], tasks[index+1:]...)
-			w.WriteHeader(http.StatusOK)
+			w.WriteHeader(http.StatusNoContent)
 			successResponse := ResponseMessage{Message: "Task deleted."}
 			json.NewEncoder(w).Encode(successResponse)
 			return

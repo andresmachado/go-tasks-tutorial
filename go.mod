@@ -1,4 +1,4 @@
-module github.com/andresmachado/go-tasks-tutorial
+module example.com/go-tasks-tutorial
 
 go 1.20
 
